@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Typing Survival</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Creepster&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--   SCREEN: TITLE                                         -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="screen-title" class="screen active">
+  <div class="title-bg"></div>
+  <div class="title-content">
+    <div class="title-glitch" data-text="TYPING SURVIVAL">TYPING SURVIVAL</div>
+    <p class="title-sub">Type to survive. Don't stop typing.</p>
+    <button id="btn-start" class="btn-primary">▶ START GAME</button>
+    <button id="btn-howto" class="btn-secondary">? HOW TO PLAY</button>
+  </div>
+  <div class="title-zombies">
+    <span class="tz">🧟</span><span class="tz">🧟</span><span class="tz">🧟</span><span class="tz">🧟</span><span class="tz">🧟</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--   SCREEN: HOW TO PLAY                                   -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="screen-howto" class="screen">
+  <div class="modal-box">
+    <h2>HOW TO PLAY</h2>
+    <ul>
+      <li>🧟 Zombies walk toward you — each has a word/phrase above them.</li>
+      <li>⌨️ Type the phrase <strong>exactly</strong> and press <strong>Enter</strong> (or space for single words) to shoot.</li>
+      <li>💀 If a zombie reaches you, you lose health.</li>
+      <li>🔥 Kill quickly to build your <strong>COMBO MULTIPLIER</strong> for bonus score & currency.</li>
+      <li>🛒 Spend currency in the <strong>SHOP</strong> between waves.</li>
+      <li>👹 Every 5 waves is a <strong>BOSS WAVE</strong>. Bosses require many phrases to defeat!</li>
+      <li>🏆 Survive all 30 waves to win!</li>
+    </ul>
+    <button class="btn-primary" onclick="showScreen('title')">← BACK</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--   SCREEN: GAME                                          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="screen-game" class="screen">
+
+  <!-- HUD TOP -->
+  <div id="hud">
+    <div id="hud-left">
+      <div class="hud-label">HEALTH</div>
+      <div id="health-bar-wrap"><div id="health-bar"></div><span id="health-text">100</span></div>
+    </div>
+    <div id="hud-center">
+      <div class="hud-wave">WAVE <span id="wave-num">1</span><span class="wave-total">/30</span></div>
+      <div id="boss-banner" class="hidden">☠ BOSS WAVE ☠</div>
+    </div>
+    <div id="hud-right">
+      <div><span class="hud-label">💰</span> <span id="currency">0</span></div>
+      <div><span class="hud-label">🏆</span> <span id="score">0</span></div>
+      <div id="combo-display" class="hidden"><span class="combo-fire">🔥</span> <span id="combo-val">1</span>x COMBO</div>
+    </div>
+  </div>
+
+  <!-- GAME CANVAS AREA -->
+  <div id="game-area">
+    <div id="field"></div>
+    <div id="castle">
+      <div id="castle-wall"></div>
+    </div>
+    <div id="player">
+      <div id="player-sprite">🧙</div>
+      <div id="muzzle-flash" class="hidden">💥</div>
+    </div>
+    <div id="projectiles-layer"></div>
+    <div id="zombies-layer"></div>
+    <div id="effects-layer"></div>
+    <div id="traps-layer"></div>
+    <div id="turrets-layer"></div>
+  </div>
+
+  <!-- RED FLASH OVERLAY -->
+  <div id="hit-overlay"></div>
+
+  <!-- TYPING INPUT -->
+  <div id="input-area">
+    <div id="target-phrase-display">
+      <span id="typed-prefix"></span><span id="remaining-text"></span>
+    </div>
+    <div id="input-row">
+      <span id="input-cursor">▶</span>
+      <input type="text" id="typing-input" autocomplete="off" spellcheck="false" placeholder="Start typing…" autofocus />
+    </div>
+    <div id="input-hint">Click a zombie to target it &nbsp;|&nbsp; Tab = nearest &nbsp;|&nbsp; Enter = submit</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--   SCREEN: WAVE COMPLETE / SHOP                          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="screen-shop" class="screen">
+  <div id="shop-container">
+    <div id="shop-header">
+      <div id="shop-title">🛒 SHOP</div>
+      <div id="shop-wave-info">Wave <span id="shop-wave-num">1</span> Complete!</div>
+      <div id="shop-currency">💰 <span id="shop-currency-val">0</span></div>
+    </div>
+    <div id="shop-grid"></div>
+    <button id="btn-next-wave" class="btn-primary">NEXT WAVE →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--   SCREEN: GAME OVER                                     -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="screen-gameover" class="screen">
+  <div class="modal-box gameover-box">
+    <div class="go-skull">💀</div>
+    <h2>GAME OVER</h2>
+    <p>You were overrun on wave <span id="go-wave"></span></p>
+    <p>Final Score: <strong id="go-score"></strong></p>
+    <p>Zombies Slain: <strong id="go-kills"></strong></p>
+    <button class="btn-primary" onclick="location.reload()">↺ TRY AGAIN</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--   SCREEN: VICTORY                                       -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="screen-victory" class="screen">
+  <div class="modal-box victory-box">
+    <div class="victory-icon">🏆</div>
+    <h2>YOU SURVIVED!</h2>
+    <p>All 30 waves defeated!</p>
+    <p>Final Score: <strong id="vic-score"></strong></p>
+    <p>Zombies Slain: <strong id="vic-kills"></strong></p>
+    <button class="btn-primary" onclick="location.reload()">↺ PLAY AGAIN</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
